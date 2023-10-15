@@ -1,0 +1,18 @@
+[package]
+name = "rest_server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-channel = "1.9.0"
+async-trait = "0.1.73"
+axum = { version = "0.6.20", features = ["http2"] }
+axum-test = "12.5.1"
+blake3 = "1.5.0"
+clap = { version = "4.4.6", features = ["derive"] }
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = "1.0.107"
+tmpdir = "1.0.0"
+tokio = { version = "1.33.0", features = ["macros", "rt", "net", "rt-multi-thread", "sync", "fs"] }
