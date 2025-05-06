@@ -65,12 +65,12 @@ trait Cache {
     async fn add(&mut self, key: String, value: String);
 
     // Returns true if the entry was deleted, false if there is no entry
-    async fn delete(&mut self, key: &String) -> bool;
+    async fn delete(&mut self, key: &str) -> bool;
 
     // Returns true if the entry was modified, false if there is no entry
     async fn modify(&mut self, key: String, value: String) -> bool;
 
-    async fn get(&self, key: &String) -> Option<String>;
+    async fn get(&self, key: &str) -> Option<String>;
 }
 
 struct MemCache {
@@ -101,7 +101,7 @@ impl Cache for MemCache {
         self.cache.insert(key, value);
     }
 
-    async fn delete(&mut self, key: &String) -> bool {
+    async fn delete(&mut self, key: &str) -> bool {
         self.cache.remove(key).is_some()
     }
 
@@ -116,7 +116,7 @@ impl Cache for MemCache {
         }
     }
 
-    async fn get(&self, key: &String) -> Option<String> {
+    async fn get(&self, key: &str) -> Option<String> {
         self.cache.get(key).cloned()
     }
 }
@@ -131,12 +131,12 @@ impl DiskCache {
         DiskCache { cache_dir }
     }
 
-    fn key_to_filename(key: &String) -> String {
+    fn key_to_filename(key: &str) -> String {
         blake3::hash(key.as_bytes()).to_hex().as_str().to_string()
     }
 
-    fn key_to_path(&self, key: &String) -> PathBuf {
-        self.cache_dir.join(Self::key_to_filename(&key))
+    fn key_to_path(&self, key: &str) -> PathBuf {
+        self.cache_dir.join(Self::key_to_filename(key))
     }
 
     fn serialize(entry: &DiskCacheEntry) -> String {
@@ -197,7 +197,7 @@ impl Cache for DiskCache {
             .unwrap();
     }
 
-    async fn delete(&mut self, key: &String) -> bool {
+    async fn delete(&mut self, key: &str) -> bool {
         match tokio::fs::remove_file(self.key_to_path(key)).await {
             Ok(()) => {
                 File::open(&self.cache_dir)
@@ -222,7 +222,7 @@ impl Cache for DiskCache {
         }
     }
 
-    async fn get(&self, key: &String) -> Option<String> {
+    async fn get(&self, key: &str) -> Option<String> {
         match File::open(self.key_to_path(key)).await {
             Ok(mut file) => {
                 let mut contents = vec![];
